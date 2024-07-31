@@ -31,3 +31,5 @@ vendor/
 # Arquivos de build
 dist/
 build/
+
+packages
