@@ -1,0 +1,33 @@
+# Arquivos e pastas do sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos de log
+*.log
+
+# Arquivos de compilação
+*.class
+*.pyc
+*.pyo
+*.pyd
+*.exe
+*.dll
+
+# Diretórios e arquivos específicos de IDE
+.vscode/
+.idea/
+*.suo
+*.user
+*.swp
+
+# Dependências
+node_modules/
+vendor/
+
+# Arquivos de configuração do ambiente
+.env
+*.env
+
+# Arquivos de build
+dist/
+build/
