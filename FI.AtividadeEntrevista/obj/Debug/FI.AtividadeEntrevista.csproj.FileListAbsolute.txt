@@ -1,0 +1,6 @@
+C:\Users\Otávio\Downloads\teste\FI.AtividadeEntrevista\bin\Debug\FI.AtividadeEntrevista.dll
+C:\Users\Otávio\Downloads\teste\FI.AtividadeEntrevista\bin\Debug\FI.AtividadeEntrevista.pdb
+C:\Users\Otávio\Downloads\teste\FI.AtividadeEntrevista\obj\Debug\FI.AtividadeEntrevista.csproj.AssemblyReference.cache
+C:\Users\Otávio\Downloads\teste\FI.AtividadeEntrevista\obj\Debug\FI.AtividadeEntrevista.csproj.CoreCompileInputs.cache
+C:\Users\Otávio\Downloads\teste\FI.AtividadeEntrevista\obj\Debug\FI.AtividadeEntrevista.dll
+C:\Users\Otávio\Downloads\teste\FI.AtividadeEntrevista\obj\Debug\FI.AtividadeEntrevista.pdb

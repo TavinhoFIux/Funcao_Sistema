@@ -38,6 +38,11 @@ namespace WebAtividadeEntrevista.Controllers
             }
             else
             {
+                if (bo.VerificarExistencia(model.CPF))
+                {
+                    Response.StatusCode = 400;
+                    return Json(string.Join(Environment.NewLine, "Usuario Já Cadastrador"));
+                }
                 
                 model.Id = bo.Incluir(new Cliente()
                 {                    

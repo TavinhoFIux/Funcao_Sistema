@@ -31,5 +31,7 @@ vendor/
 # Arquivos de build
 dist/
 build/
-
 packages
+obj
+bin
+.vs
