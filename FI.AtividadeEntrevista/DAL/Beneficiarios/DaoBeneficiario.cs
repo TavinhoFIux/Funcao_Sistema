@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 
 namespace FI.AtividadeEntrevista.DAL
 {
@@ -84,5 +85,34 @@ namespace FI.AtividadeEntrevista.DAL
 
             base.Executar("FI_SP_AltBeneficiario", parametros);
         }
+
+        internal bool VerificarCpfCadastrado(long idCliente, string cpf)
+        {
+            try
+            {
+                List<System.Data.SqlClient.SqlParameter> parametros = new List<System.Data.SqlClient.SqlParameter>
+                {
+                    new System.Data.SqlClient.SqlParameter("@IdCliente", idCliente),
+                    new System.Data.SqlClient.SqlParameter("@CPF", cpf)
+                };
+
+                DataSet ds = base.Consultar("FI_SP_VerificarCpfCadastrado", parametros);
+
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    int resultado = Convert.ToInt32(ds.Tables[0].Rows[0][0]);
+                    return resultado == 1;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Erro ao verificar CPF cadastrado: {ex.Message}");
+                return false;
+            }
+        }
+
+
     }
 }

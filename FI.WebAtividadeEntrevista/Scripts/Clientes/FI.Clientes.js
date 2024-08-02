@@ -1,8 +1,10 @@
 ﻿$(document).ready(function () {
 
-    $('#modalBeneficiario').on('shown.bs.modal', function () {
-        carregarBeneficiarios(obj.Id);
-    });
+    if (obj) {
+        $('#modalBeneficiario').on('shown.bs.modal', function () {
+            obj.Id ? carregarBeneficiarios(obj.Id) : '';
+        });
+    }
 
     $('#formCadastro').submit(function (e) {
         e.preventDefault();
@@ -131,6 +133,11 @@ function limparFormBeneficiario() {
 
 function adicionarBeneficiario() {
     var clienteCPF = $("#CPF").val();
+    if (clienteCPF == '') {
+        ModalDialog("Ocorreu um erro", "Cadastre Cliente Prinmeiro");
+        return
+    }
+
     var beneficiarioNome = $("#BeneficiarioNome").val();
     var beneficiarioCPF = $("#BeneficiarioCPF").val();
 
@@ -156,7 +163,7 @@ function adicionarBeneficiario() {
                 $("#modalBeneficiario").modal('hide');
 
                 if (r.status == 400)
-                    ModalDialog("Ocorreu um erro", r.responseJSON);
+                    ModalDialog("Ocorreu um erro", r.responseJSON.message);
                 else if (r.status == 500)
                     ModalDialog("Ocorreu um erro", "Ocorreu um erro interno no servidor.");
             },

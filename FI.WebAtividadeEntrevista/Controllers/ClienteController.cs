@@ -160,6 +160,12 @@ namespace WebAtividadeEntrevista.Controllers
         [HttpPost]
         public JsonResult IncluirBeneficiario(BeneficiarioModel model)
         {
+
+            if (model.ClienteCPF is null)
+            {
+                Response.StatusCode = 400;
+                return Json(new { success = false, message = "Cliente não cadastrado" });
+            }
             BoBeneficiario boBeneficiario = new BoBeneficiario();
             BoCliente boCliente = new BoCliente();
             var cliente = boCliente.BuscarClientePorCpf(model.ClienteCPF);
@@ -168,6 +174,12 @@ namespace WebAtividadeEntrevista.Controllers
             {
                 Response.StatusCode = 400;
                 return Json(new { success = false, message = "Cliente não cadastrado" });
+            }
+
+            if (boBeneficiario.VerificarCpfCadastrado(cliente.Id, model.BeneficiarioCPF))
+            {
+                Response.StatusCode = 400;
+                return Json(new { success = false, message = "Beneficiario já cadastrado" });
             }
 
             var beneficiario = new Beneficiario
@@ -235,10 +247,24 @@ namespace WebAtividadeEntrevista.Controllers
         [HttpPost]
         public JsonResult AlterarBeneficiario(BeneficiarioModel model)
         {
-            BoBeneficiario boBeneficiario = new BoBeneficiario();
-
             try
             {
+                BoCliente boCliente = new BoCliente();
+                var cliente = boCliente.BuscarClientePorCpf(model.ClienteCPF);
+
+                if (cliente is null)
+                {
+                    Response.StatusCode = 400;
+                    return Json(new { success = false, message = "Cliente não cadastrado" });
+                }
+
+                BoBeneficiario boBeneficiario = new BoBeneficiario();
+
+                if (boBeneficiario.VerificarCpfCadastrado(cliente.Id, model.BeneficiarioCPF))
+                {
+                    Response.StatusCode = 400;
+                    return Json(new { success = false, message = "Beneficiario já cadastrado" });
+                }
                 boBeneficiario.Alterar(model.Id, model.BeneficiarioNome, model.BeneficiarioCPF);
 
                 return Json(new { success = true, message = "Beneficiário atualizado com sucesso." });

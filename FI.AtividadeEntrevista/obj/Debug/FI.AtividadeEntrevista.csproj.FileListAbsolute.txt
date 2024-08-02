@@ -10,3 +10,9 @@ C:\Users\Otávio\Documents\Repo\Funcao_Sistema\FI.AtividadeEntrevista\obj\Debug\
 C:\Users\Otávio\Documents\Repo\Funcao_Sistema\FI.AtividadeEntrevista\obj\Debug\FI.AtividadeEntrevista.csproj.CoreCompileInputs.cache
 C:\Users\Otávio\Documents\Repo\Funcao_Sistema\FI.AtividadeEntrevista\obj\Debug\FI.AtividadeEntrevista.dll
 C:\Users\Otávio\Documents\Repo\Funcao_Sistema\FI.AtividadeEntrevista\obj\Debug\FI.AtividadeEntrevista.pdb
+C:\Users\Otávio\Documents\Funcao_Sistema\FI.AtividadeEntrevista\bin\Debug\FI.AtividadeEntrevista.dll
+C:\Users\Otávio\Documents\Funcao_Sistema\FI.AtividadeEntrevista\bin\Debug\FI.AtividadeEntrevista.pdb
+C:\Users\Otávio\Documents\Funcao_Sistema\FI.AtividadeEntrevista\obj\Debug\FI.AtividadeEntrevista.csproj.AssemblyReference.cache
+C:\Users\Otávio\Documents\Funcao_Sistema\FI.AtividadeEntrevista\obj\Debug\FI.AtividadeEntrevista.csproj.CoreCompileInputs.cache
+C:\Users\Otávio\Documents\Funcao_Sistema\FI.AtividadeEntrevista\obj\Debug\FI.AtividadeEntrevista.dll
+C:\Users\Otávio\Documents\Funcao_Sistema\FI.AtividadeEntrevista\obj\Debug\FI.AtividadeEntrevista.pdb

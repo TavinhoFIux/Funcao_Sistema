@@ -147,7 +147,7 @@ function adicionarBeneficiario() {
                 $("#modalBeneficiario").modal('hide');
 
                 if (r.status == 400)
-                    ModalDialog("Ocorreu um erro", r.responseJSON);
+                    ModalDialog("Ocorreu um erro", r.responseJSON.message);
                 else if (r.status == 500)
                     ModalDialog("Ocorreu um erro", "Ocorreu um erro interno no servidor.");
             },

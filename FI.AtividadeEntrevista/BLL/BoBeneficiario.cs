@@ -31,7 +31,13 @@ namespace FI.AtividadeEntrevista.BLL
         public void Alterar(long id, string nome, string cpf)
         {
             DAL.DaoBeneficiario cli = new DAL.DaoBeneficiario();
-             cli.Alterar(id, nome, cpf);
+            cli.Alterar(id, nome, cpf);
+        }
+
+        public bool VerificarCpfCadastrado(long idCliente, string cpf)
+        {
+            DAL.DaoBeneficiario cli = new DAL.DaoBeneficiario();
+            return cli.VerificarCpfCadastrado(idCliente, cpf);
         }
 
     }
