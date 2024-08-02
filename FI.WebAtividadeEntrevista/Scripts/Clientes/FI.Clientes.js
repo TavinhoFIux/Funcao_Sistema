@@ -1,5 +1,9 @@
-﻿
-$(document).ready(function () {
+﻿$(document).ready(function () {
+
+    $('#modalBeneficiario').on('shown.bs.modal', function () {
+        carregarBeneficiarios(obj.Id);
+    });
+
     $('#formCadastro').submit(function (e) {
         e.preventDefault();
         $.ajax({
@@ -15,24 +19,26 @@ $(document).ready(function () {
                 "Cidade": $(this).find("#Cidade").val(),
                 "Logradouro": $(this).find("#Logradouro").val(),
                 "Telefone": $(this).find("#Telefone").val(),
-                "CPF": $(this).find("#CPF").val(),
+                "CPF": removerMascaraCpf($(this).find("#CPF").val())
             },
             error:
-            function (r) {
-                if (r.status == 400)
-                    ModalDialog("Ocorreu um erro", r.responseJSON);
-                else if (r.status == 500)
-                    ModalDialog("Ocorreu um erro", "Ocorreu um erro interno no servidor.");
-            },
+                function (r) {
+                    if (r.status == 400)
+                        ModalDialog("Ocorreu um erro", r.responseJSON);
+                    else if (r.status == 500)
+                        ModalDialog("Ocorreu um erro", "Ocorreu um erro interno no servidor.");
+                },
             success:
-            function (r) {
-                ModalDialog("Sucesso!", r)
-                $("#formCadastro")[0].reset();
-            }
+                function (r) {
+                    ModalDialog("Sucesso!", r)
+                    $("#formCadastro")[0].reset();
+                }
         });
+
+
     })
-    
-})
+});
+
 
 function ModalDialog(titulo, texto) {
     var random = Math.random().toString().replace('.', '');
@@ -56,4 +62,193 @@ function ModalDialog(titulo, texto) {
 
     $('body').append(texto);
     $('#' + random).modal('show');
+}
+
+function carregarBeneficiarios(clienteId) {
+    $.ajax({
+        url: urlBuscarBeneficiarioPorCliente,
+        type: 'GET',
+        data: { idCliente: clienteId },
+        success: function (response) {
+            if (response.success) {
+                var beneficiarios = response.data;
+                adicionarBeneficiariosNaTabela(beneficiarios);
+            } else {
+                console.error('Erro: ' + response.message);
+            }
+        },
+        error: function (xhr) {
+            alert('Erro ao carregar beneficiários: ' + xhr.responseText);
+        }
+    });
+}
+
+
+var beneficiarioIdAtual = null;
+
+function salvarBeneficiario() {
+    beneficiarioIdAtual ? alteraBeneficiario() : adicionarBeneficiario();
+}
+
+
+function alteraBeneficiario() {
+    var cpf = $("#BeneficiarioCPF").val();
+    var nome = $("#BeneficiarioNome").val();
+    var id = beneficiarioIdAtual;
+
+
+    $.ajax({
+        url: urlAtualizarBeneficiario,
+        type: 'POST',
+        data: {
+            Id: id,
+            BeneficiarioNome: nome,
+            BeneficiarioCPF: removerMascaraCpf(cpf)
+        },
+        success: function (response) {
+            beneficiarioIdAtual = null;
+            limparFormBeneficiario();
+
+            if (response.success) {
+                atualizarTabelaBeneficiarios(id, nome, cpf);
+                console.log(response.message);
+            } else {
+                console.error('Erro: ' + response.message);
+            }
+        },
+        error: function (xhr) {
+            beneficiarioIdAtual = null;
+            alert('Erro ao salvar beneficiário: ' + xhr.responseText);
+        }
+    });
+}
+
+
+function limparFormBeneficiario() {
+    $('#BeneficiarioCPF').val('');
+    $('#BeneficiarioNome').val('');
+}
+
+function adicionarBeneficiario() {
+    var clienteCPF = $("#CPF").val();
+    var beneficiarioNome = $("#BeneficiarioNome").val();
+    var beneficiarioCPF = $("#BeneficiarioCPF").val();
+
+    $.ajax({
+        url: urlPostBeneficiario,
+        method: "POST",
+        data: {
+            ClienteCPF: removerMascaraCpf(clienteCPF),
+            BeneficiarioNome: beneficiarioNome,
+            BeneficiarioCPF: removerMascaraCpf(beneficiarioCPF)
+        },
+        success: function (response) {
+            limparFormBeneficiario();
+            if (response.success) {
+                adicionarBeneficiariosNaTabela([response.beneficiario]);
+            } else {
+                console.error(response.message);
+            }
+        },
+        error:
+            function (r) {
+                limparFormBeneficiario();
+                $("#modalBeneficiario").modal('hide');
+
+                if (r.status == 400)
+                    ModalDialog("Ocorreu um erro", r.responseJSON);
+                else if (r.status == 500)
+                    ModalDialog("Ocorreu um erro", "Ocorreu um erro interno no servidor.");
+            },
+    });
+}
+
+function adicionarBeneficiariosNaTabela(beneficiarios) {
+    var tableBody = $("#beneficiariosTableBody");
+
+    beneficiarios.forEach(function (beneficiario) {
+
+        var existente = tableBody.find(`tr[data-id='${beneficiario.Id}']`).length > 0;
+
+        var cpfComMascara = aplicarMascaraCpf(beneficiario.CPF);
+
+        if (!existente) {
+            tableBody.append(
+                `<tr data-id="${beneficiario.Id}">
+                    <td>${beneficiario.Nome}</td>
+                    <td>${cpfComMascara}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" type="button"  onclick="editarBeneficiario(${beneficiario.Id})">Alterar</button>
+                        <button class="btn btn-primary btn-sm" type="button"  onclick="excluirBeneficiario(${beneficiario.Id})">Excluir</button>
+                    </td>
+                </tr>`
+            );
+        }
+    });
+}
+
+
+function atualizarTabelaBeneficiarios(beneficiarioId, beneficiarioName, beneficiarioCpf) {
+    var row = $(`#beneficiariosTableBody tr[data-id='${beneficiarioId}']`);
+
+    if (row.length) {
+        row.find('td').eq(0).text(beneficiarioName);
+        row.find('td').eq(1).text(beneficiarioCpf);
+    }
+}
+
+function editarBeneficiario(id) {
+    beneficiarioIdAtual = id;
+    var row = $(`#beneficiariosTableBody tr[data-id='${id}']`);
+
+    if (row.length) {
+        var beneficiarioName = row.find('td').eq(0).text();
+        var beneficiarioCpf = row.find('td').eq(1).text();
+        $("#BeneficiarioNome").val(beneficiarioName)
+        $("#BeneficiarioCPF").val(beneficiarioCpf);
+    }
+    $("#btnSalvar").text("Salvar Alterações");
+}
+
+function excluirBeneficiario(id) {
+    if (confirm('Tem certeza que deseja excluir este beneficiário?')) {
+        $.ajax({
+            url: urlDeleteBeneficiario,
+            type: 'POST',
+            data: { id: id },
+            success: function (response) {
+                if (response.success) {
+                    console.log(response.message);
+                    $(`tr[data-id='${id}']`).remove();
+
+                } else {
+                    console.log('Erro ao excluir beneficiário: ' + response.message);
+                }
+            },
+            error: function (xhr) {
+                console.log('Erro ao excluir beneficiário: ' + xhr.responseText);
+            }
+        });
+    }
+}
+
+
+function aplicarMascaraCpf(cpf) {
+    cpf = cpf.replace(/\D/g, '');
+
+    if (cpf.length <= 11) {
+        cpf = cpf.replace(/(\d{3})(\d{3})?(\d{3})?(\d{2})?/, function (match, p1, p2, p3, p4) {
+            let result = p1;
+            if (p2) result += '.' + p2;
+            if (p3) result += '.' + p3;
+            if (p4) result += '-' + p4;
+            return result;
+        });
+    }
+
+    return cpf;
+}
+
+function removerMascaraCpf(cpf) {
+    return cpf.replace(/\D/g, '');
 }

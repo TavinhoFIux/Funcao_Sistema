@@ -3,9 +3,9 @@ using WebAtividadeEntrevista.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using FI.AtividadeEntrevista.DML;
+using FI.WebAtividadeEntrevista.Models;
 
 namespace WebAtividadeEntrevista.Controllers
 {
@@ -152,6 +152,100 @@ namespace WebAtividadeEntrevista.Controllers
             catch (Exception ex)
             {
                 return Json(new { Result = "ERROR", Message = ex.Message });
+            }
+        }
+
+
+
+        [HttpPost]
+        public JsonResult IncluirBeneficiario(BeneficiarioModel model)
+        {
+            BoBeneficiario boBeneficiario = new BoBeneficiario();
+            BoCliente boCliente = new BoCliente();
+            var cliente = boCliente.BuscarClientePorCpf(model.ClienteCPF);
+
+            if (cliente is null)
+            {
+                Response.StatusCode = 400;
+                return Json(new { success = false, message = "Cliente não cadastrado" });
+            }
+
+            var beneficiario = new Beneficiario
+            {
+                IdCliente = cliente.Id,
+                Nome = model.BeneficiarioNome,
+                CPF = model.BeneficiarioCPF
+            };
+
+            var response = boBeneficiario.Incluir(beneficiario);
+
+            if (response != null)
+            {
+                return Json(new { success = true, beneficiario = response });
+            }
+            else
+            {
+                Response.StatusCode = 500;
+                return Json(new { success = false, message = "Erro ao inserir beneficiário" });
+            }
+        }
+
+        [HttpGet]
+        public JsonResult BuscarBeneficiariosPorIdCliente(long idCliente)
+        {
+            BoBeneficiario boBeneficiario = new BoBeneficiario();
+
+            try
+            {
+                var beneficiarios = boBeneficiario.BuscarBeneficiariosPorIdCliente(idCliente);
+
+                if (beneficiarios != null && beneficiarios.Count > 0)
+                {
+                    return Json(new { success = true, data = beneficiarios }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Nenhum beneficiário encontrado para o IDCLIENTE fornecido." }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Ocorreu um erro: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+
+        [HttpPost]
+        public JsonResult ExcluirBeneficiario(long id)
+        {
+            BoBeneficiario boBeneficiario = new BoBeneficiario();
+
+            try
+            {
+                boBeneficiario.Excluir(id);
+                return Json(new { success = true, message = "Beneficiário excluído com sucesso." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Ocorreu um erro: " + ex.Message });
+            }
+        }
+
+
+        [HttpPost]
+        public JsonResult AlterarBeneficiario(BeneficiarioModel model)
+        {
+            BoBeneficiario boBeneficiario = new BoBeneficiario();
+
+            try
+            {
+                boBeneficiario.Alterar(model.Id, model.BeneficiarioNome, model.BeneficiarioCPF);
+
+                return Json(new { success = true, message = "Beneficiário atualizado com sucesso." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Ocorreu um erro: " + ex.Message });
             }
         }
     }

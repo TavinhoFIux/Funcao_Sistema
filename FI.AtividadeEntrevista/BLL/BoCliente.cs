@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace FI.AtividadeEntrevista.BLL
 {
@@ -53,10 +49,10 @@ namespace FI.AtividadeEntrevista.BLL
         /// <summary>
         /// Lista os clientes
         /// </summary>
-        public List<DML.Cliente> Listar()
+        public DML.Cliente BuscarClientePorCpf(string cpf)
         {
             DAL.DaoCliente cli = new DAL.DaoCliente();
-            return cli.Listar();
+            return cli.BuscarClientePorCpf(cpf);
         }
 
         /// <summary>

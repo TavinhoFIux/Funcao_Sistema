@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace WebAtividadeEntrevista.Models
 {
@@ -29,7 +25,8 @@ namespace WebAtividadeEntrevista.Models
         /// <summary>
         /// CPF
         /// </summary>
-        [RegularExpression(@"^\d{3}\.\d{3}\.\d{3}\-\d{2}$", ErrorMessage = "Digite um CPF válido")]
+        [Required]
+        [RegularExpression(@"^(\d{3}\.\d{3}\.\d{3}\-\d{2}|\d{11})$", ErrorMessage = "Digite um CPF válido.")]
         public string CPF { get; set; }
 
         /// <summary>

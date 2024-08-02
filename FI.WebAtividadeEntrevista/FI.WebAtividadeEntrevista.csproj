@@ -125,8 +125,10 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\BeneficiarioModel.cs" />
     <Compile Include="Models\ClienteModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="Views\Cliente\ModalBeneficiario.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\BancoDeDados.mdf" />

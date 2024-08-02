@@ -88,16 +88,16 @@ namespace FI.AtividadeEntrevista.DAL
         /// <summary>
         /// Lista todos os clientes
         /// </summary>
-        internal List<DML.Cliente> Listar()
+        internal DML.Cliente BuscarClientePorCpf(string cpf)
         {
             List<System.Data.SqlClient.SqlParameter> parametros = new List<System.Data.SqlClient.SqlParameter>();
 
-            parametros.Add(new System.Data.SqlClient.SqlParameter("Id", 0));
+            parametros.Add(new System.Data.SqlClient.SqlParameter("@CPF", cpf));
 
-            DataSet ds = base.Consultar("FI_SP_ConsCliente", parametros);
+            DataSet ds = base.Consultar("FI_SP_ConsClientePorCPF", parametros);
             List<DML.Cliente> cli = Converter(ds);
 
-            return cli;
+            return cli.FirstOrDefault();
         }
 
         /// <summary>
