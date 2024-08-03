@@ -1,4 +1,7 @@
 ﻿$(document).ready(function () {
+    $('#CPF').mask('000.000.000-00');
+    $('#BeneficiarioCPF').mask('000.000.000-00');
+
     if (obj) {
         $('#formCadastro #Nome').val(obj.Nome);
         $('#formCadastro #CEP').val(obj.CEP);
@@ -41,13 +44,13 @@
             error:
             function (r) {
                 if (r.status == 400)
-                    ModalDialog("Ocorreu um erro", r.responseJSON);
+                    ModalDialog("Ocorreu um erro", r.responseJSON.message);
                 else if (r.status == 500)
                     ModalDialog("Ocorreu um erro", "Ocorreu um erro interno no servidor.");
             },
             success:
             function (r) {
-                ModalDialog("Sucesso!", r)
+                ModalDialog("Sucesso!", r.message)
                 $("#formCadastro")[0].reset();                                
             }
         });
@@ -83,6 +86,7 @@ function salvarBeneficiario() {
 
 
 function alteraBeneficiario() {
+    var clienteCPF = $("#CPF").val();
     var cpf = $("#BeneficiarioCPF").val();
     var nome = $("#BeneficiarioNome").val();
     var id = beneficiarioIdAtual;
@@ -94,7 +98,8 @@ function alteraBeneficiario() {
         data: {
             Id: id,
             BeneficiarioNome: nome,
-            BeneficiarioCPF: removerMascaraCpf(cpf)
+            BeneficiarioCPF: removerMascaraCpf(cpf),
+            ClienteCPF: removerMascaraCpf(clienteCPF)
         },
         success: function (response) {
             beneficiarioIdAtual = null;

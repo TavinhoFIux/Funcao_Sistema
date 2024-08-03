@@ -241,3 +241,15 @@ C:\Users\Otávio\Documents\Funcao_Sistema\FI.WebAtividadeEntrevista\obj\Debug\FI
 C:\Users\Otávio\Documents\Funcao_Sistema\FI.WebAtividadeEntrevista\obj\Debug\FI.WebAt.CEBAAAF9.Up2Date
 C:\Users\Otávio\Documents\Funcao_Sistema\FI.WebAtividadeEntrevista\obj\Debug\FI.WebAtividadeEntrevista.dll
 C:\Users\Otávio\Documents\Funcao_Sistema\FI.WebAtividadeEntrevista\obj\Debug\FI.WebAtividadeEntrevista.pdb
+C:\Users\Otávio\Documents\Funcao_Sistema\FI.WebAtividadeEntrevista\bin\MediatR.dll
+C:\Users\Otávio\Documents\Funcao_Sistema\FI.WebAtividadeEntrevista\bin\MediatR.Extensions.Microsoft.DependencyInjection.dll
+C:\Users\Otávio\Documents\Funcao_Sistema\FI.WebAtividadeEntrevista\bin\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\Otávio\Documents\Funcao_Sistema\FI.WebAtividadeEntrevista\bin\FI.AtividadeEntrevista.dll.config
+C:\Users\Otávio\Documents\Funcao_Sistema\FI.WebAtividadeEntrevista\bin\MediatR.xml
+C:\Users\Otávio\Documents\Funcao_Sistema\FI.WebAtividadeEntrevista\bin\Microsoft.Extensions.DependencyInjection.Abstractions.xml
+C:\Users\Otávio\Documents\Funcao_Sistema\FI.WebAtividadeEntrevista\bin\SimpleInjector.dll
+C:\Users\Otávio\Documents\Funcao_Sistema\FI.WebAtividadeEntrevista\bin\SimpleInjector.Integration.Web.dll
+C:\Users\Otávio\Documents\Funcao_Sistema\FI.WebAtividadeEntrevista\bin\SimpleInjector.Integration.Web.Mvc.dll
+C:\Users\Otávio\Documents\Funcao_Sistema\FI.WebAtividadeEntrevista\bin\SimpleInjector.xml
+C:\Users\Otávio\Documents\Funcao_Sistema\FI.WebAtividadeEntrevista\bin\SimpleInjector.Integration.Web.xml
+C:\Users\Otávio\Documents\Funcao_Sistema\FI.WebAtividadeEntrevista\bin\SimpleInjector.Integration.Web.Mvc.xml

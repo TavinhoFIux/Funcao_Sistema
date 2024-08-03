@@ -1,10 +1,8 @@
-﻿$(document).ready(function () {
+﻿var clienteCadastrado = false;
+$(document).ready(function () {
 
-    if (obj) {
-        $('#modalBeneficiario').on('shown.bs.modal', function () {
-            obj.Id ? carregarBeneficiarios(obj.Id) : '';
-        });
-    }
+    $('#CPF').mask('000.000.000-00');
+    $('#BeneficiarioCPF').mask('000.000.000-00');
 
     $('#formCadastro').submit(function (e) {
         e.preventDefault();
@@ -26,16 +24,25 @@
             error:
                 function (r) {
                     if (r.status == 400)
-                        ModalDialog("Ocorreu um erro", r.responseJSON);
+                        ModalDialog("Ocorreu um erro", r.responseJSON.message);
                     else if (r.status == 500)
                         ModalDialog("Ocorreu um erro", "Ocorreu um erro interno no servidor.");
                 },
             success:
                 function (r) {
-                    ModalDialog("Sucesso!", r)
+                    clienteCadastrado = true;
+                    ModalDialog("Sucesso!", r.message)
                     $("#formCadastro")[0].reset();
                 }
         });
+
+        if (clienteCadastrado) {
+            $('#modalBeneficiario').on('shown.bs.modal', function () {
+                if (obj.Id) {
+                    carregarBeneficiarios(obj.Id);
+                }
+            });
+        }
 
 
     })
@@ -94,6 +101,7 @@ function salvarBeneficiario() {
 
 
 function alteraBeneficiario() {
+    var clienteCPF = $("#CPF").val();
     var cpf = $("#BeneficiarioCPF").val();
     var nome = $("#BeneficiarioNome").val();
     var id = beneficiarioIdAtual;
@@ -105,7 +113,8 @@ function alteraBeneficiario() {
         data: {
             Id: id,
             BeneficiarioNome: nome,
-            BeneficiarioCPF: removerMascaraCpf(cpf)
+            BeneficiarioCPF: removerMascaraCpf(cpf),
+            ClienteCPF: removerMascaraCpf(clienteCPF)
         },
         success: function (response) {
             beneficiarioIdAtual = null;
@@ -133,8 +142,8 @@ function limparFormBeneficiario() {
 
 function adicionarBeneficiario() {
     var clienteCPF = $("#CPF").val();
-    if (clienteCPF == '') {
-        ModalDialog("Ocorreu um erro", "Cadastre Cliente Prinmeiro");
+    if (!clienteCadastrado) {
+        ModalDialog("Ocorreu um erro", "Cadastre Cliente ");
         return
     }
 

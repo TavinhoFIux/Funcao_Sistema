@@ -5,10 +5,10 @@
 @section scripts{
     <script>
         var urlPost = '@Url.Action("Incluir", "Cliente", new { area = "" })';
-        var urlPostBeneficiario = '@Url.Action("IncluirBeneficiario", "Cliente", new { area = "" })';
-        var urlDeleteBeneficiario = '@Url.Action("ExcluirBeneficiario", "Cliente", new { area = "" })';
-        var urlAtualizarBeneficiario = '@Url.Action("AlterarBeneficiario", "Cliente", new { area = "" })';
-        var urlBuscarBeneficiarioPorCliente= '@Url.Action("BuscarBeneficiariosPorIdCliente", "Cliente", new { area = "" })';
+        var urlPostBeneficiario = '@Url.Action("IncluirBeneficiario", "Beneficiario", new { area = "" })';
+        var urlDeleteBeneficiario = '@Url.Action("ExcluirBeneficiario", "Beneficiario", new { area = "" })';
+        var urlAtualizarBeneficiario = '@Url.Action("AlterarBeneficiario", "Beneficiario", new { area = "" })';
+        var urlBuscarBeneficiarioPorCliente= '@Url.Action("BuscarBeneficiariosPorIdCliente", "Beneficiario", new { area = "" })';
     </script>
     @Scripts.Render("~/bundles/clientes")
 }

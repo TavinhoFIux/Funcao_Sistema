@@ -5,12 +5,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using FI.AtividadeEntrevista.DML;
-using FI.WebAtividadeEntrevista.Models;
+using System.Threading.Tasks;
+using MediatR;
+using FI.AtividadeEntrevista.BLL.Cliente.Commands;
+using FI.AtividadeEntrevista.BLL.Cliente.Query;
 
 namespace WebAtividadeEntrevista.Controllers
 {
     public class ClienteController : Controller
     {
+        private readonly IMediator _mediator;
+
+        public ClienteController(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
         public ActionResult Index()
         {
             return View();
@@ -23,131 +32,128 @@ namespace WebAtividadeEntrevista.Controllers
         }
 
         [HttpPost]
-        public JsonResult Incluir(ClienteModel model)
+        public async Task<JsonResult> Incluir(ClienteModel model)
         {
-            BoCliente bo = new BoCliente();
-            
-            if (!this.ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                List<string> erros = (from item in ModelState.Values
-                                      from error in item.Errors
-                                      select error.ErrorMessage).ToList();
+                var erros = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
 
                 Response.StatusCode = 400;
                 return Json(string.Join(Environment.NewLine, erros));
             }
-            else
-            {
-                if (bo.VerificarExistencia(model.CPF))
-                {
-                    Response.StatusCode = 400;
-                    return Json(string.Join(Environment.NewLine, "Usuario Já Cadastrador"));
-                }
-                
-                model.Id = bo.Incluir(new Cliente()
-                {                    
-                    CEP = model.CEP,
-                    Cidade = model.Cidade,
-                    Email = model.Email,
-                    Estado = model.Estado,
-                    Logradouro = model.Logradouro,
-                    Nacionalidade = model.Nacionalidade,
-                    Nome = model.Nome,
-                    Sobrenome = model.Sobrenome,
-                    Telefone = model.Telefone,
-                    CPF = model.CPF,
-                });
 
-           
-                return Json("Cadastro efetuado com sucesso");
+            try
+            {
+                var command = new IncluirClienteCommand(
+                    model.CEP,
+                    model.Cidade,
+                    model.Email,
+                    model.Estado,
+                    model.Logradouro,
+                    model.Nacionalidade,
+                    model.Nome,
+                    model.Sobrenome,
+                    model.Telefone,
+                    model.CPF
+                );
+
+                long clienteId = await _mediator.Send(command);
+
+                return Json(new { success = true, message = "Cadastro efetuado com sucesso", id = clienteId });
+            }
+            catch (InvalidOperationException ex)
+            {
+                Response.StatusCode = 400;
+                return Json(new { success = false, message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Ocorreu um erro: " + ex.Message });
             }
         }
 
         [HttpPost]
-        public JsonResult Alterar(ClienteModel model)
+        public async Task<JsonResult> Alterar(ClienteModel model)
         {
-            BoCliente bo = new BoCliente();
-       
-            if (!this.ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                List<string> erros = (from item in ModelState.Values
-                                      from error in item.Errors
-                                      select error.ErrorMessage).ToList();
+                var erros = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
 
                 Response.StatusCode = 400;
                 return Json(string.Join(Environment.NewLine, erros));
             }
-            else
+
+            try
             {
-                bo.Alterar(new Cliente()
-                {
-                    Id = model.Id,
-                    CEP = model.CEP,
-                    Cidade = model.Cidade,
-                    Email = model.Email,
-                    Estado = model.Estado,
-                    Logradouro = model.Logradouro,
-                    Nacionalidade = model.Nacionalidade,
-                    Nome = model.Nome,
-                    Sobrenome = model.Sobrenome,
-                    Telefone = model.Telefone,
-                    CPF = model.CPF
-                });
-                               
-                return Json("Cadastro alterado com sucesso");
+                var command = new AlterarClienteCommand(
+                    model.Id,
+                    model.CEP,
+                    model.Cidade,
+                    model.Email,
+                    model.Estado,
+                    model.Logradouro,
+                    model.Nacionalidade,
+                    model.Nome,
+                    model.Sobrenome,
+                    model.Telefone,
+                    model.CPF
+                );
+
+                bool sucesso = await _mediator.Send(command);
+
+                return Json(new { success = sucesso, message = sucesso ? "Cadastro alterado com sucesso" : "Falha ao alterar cadastro" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Ocorreu um erro: " + ex.Message });
             }
         }
 
         [HttpGet]
-        public ActionResult Alterar(long id)
+        public async Task<ActionResult> Alterar(long id)
         {
-            BoCliente bo = new BoCliente();
-            Cliente cliente = bo.Consultar(id);
-            Models.ClienteModel model = null;
+            var query = new ConsultarClienteQuery(id);
+            var cliente = await _mediator.Send(query);
 
-            if (cliente != null)
+            if (cliente == null)
             {
-                model = new ClienteModel()
-                {
-                    Id = cliente.Id,
-                    CEP = cliente.CEP,
-                    Cidade = cliente.Cidade,
-                    Email = cliente.Email,
-                    Estado = cliente.Estado,
-                    Logradouro = cliente.Logradouro,
-                    Nacionalidade = cliente.Nacionalidade,
-                    Nome = cliente.Nome,
-                    Sobrenome = cliente.Sobrenome,
-                    Telefone = cliente.Telefone,
-                    CPF = cliente.CPF
-                };
-
-            
+                return HttpNotFound();
             }
+
+            var model = new ClienteModel
+            {
+                Id = cliente.Id,
+                CEP = cliente.CEP,
+                Cidade = cliente.Cidade,
+                Email = cliente.Email,
+                Estado = cliente.Estado,
+                Logradouro = cliente.Logradouro,
+                Nacionalidade = cliente.Nacionalidade,
+                Nome = cliente.Nome,
+                Sobrenome = cliente.Sobrenome,
+                Telefone = cliente.Telefone,
+                CPF = cliente.CPF
+            };
 
             return View(model);
         }
 
+
         [HttpPost]
-        public JsonResult ClienteList(int jtStartIndex = 0, int jtPageSize = 0, string jtSorting = null)
+        public async Task<JsonResult> ClienteList(int jtStartIndex = 0, int jtPageSize = 0, string jtSorting = null)
         {
             try
             {
-                int qtd = 0;
-                string campo = string.Empty;
-                string crescente = string.Empty;
-                string[] array = jtSorting.Split(' ');
+                var command = new BuscarClientesCommand(jtStartIndex, jtPageSize, jtSorting);
+                var result = await _mediator.Send(command);
 
-                if (array.Length > 0)
-                    campo = array[0];
-
-                if (array.Length > 1)
-                    crescente = array[1];
-
-                List<Cliente> clientes = new BoCliente().Pesquisa(jtStartIndex, jtPageSize, campo, crescente.Equals("ASC", StringComparison.InvariantCultureIgnoreCase), out qtd);
-
-                //Return result to jTable
-                return Json(new { Result = "OK", Records = clientes, TotalRecordCount = qtd });
+                return Json(new { Result = "OK", Records = result.Clientes, TotalRecordCount = result.TotalRecordCount });
             }
             catch (Exception ex)
             {
@@ -155,124 +161,5 @@ namespace WebAtividadeEntrevista.Controllers
             }
         }
 
-
-
-        [HttpPost]
-        public JsonResult IncluirBeneficiario(BeneficiarioModel model)
-        {
-
-            if (model.ClienteCPF is null)
-            {
-                Response.StatusCode = 400;
-                return Json(new { success = false, message = "Cliente não cadastrado" });
-            }
-            BoBeneficiario boBeneficiario = new BoBeneficiario();
-            BoCliente boCliente = new BoCliente();
-            var cliente = boCliente.BuscarClientePorCpf(model.ClienteCPF);
-
-            if (cliente is null)
-            {
-                Response.StatusCode = 400;
-                return Json(new { success = false, message = "Cliente não cadastrado" });
-            }
-
-            if (boBeneficiario.VerificarCpfCadastrado(cliente.Id, model.BeneficiarioCPF))
-            {
-                Response.StatusCode = 400;
-                return Json(new { success = false, message = "Beneficiario já cadastrado" });
-            }
-
-            var beneficiario = new Beneficiario
-            {
-                IdCliente = cliente.Id,
-                Nome = model.BeneficiarioNome,
-                CPF = model.BeneficiarioCPF
-            };
-
-            var response = boBeneficiario.Incluir(beneficiario);
-
-            if (response != null)
-            {
-                return Json(new { success = true, beneficiario = response });
-            }
-            else
-            {
-                Response.StatusCode = 500;
-                return Json(new { success = false, message = "Erro ao inserir beneficiário" });
-            }
-        }
-
-        [HttpGet]
-        public JsonResult BuscarBeneficiariosPorIdCliente(long idCliente)
-        {
-            BoBeneficiario boBeneficiario = new BoBeneficiario();
-
-            try
-            {
-                var beneficiarios = boBeneficiario.BuscarBeneficiariosPorIdCliente(idCliente);
-
-                if (beneficiarios != null && beneficiarios.Count > 0)
-                {
-                    return Json(new { success = true, data = beneficiarios }, JsonRequestBehavior.AllowGet);
-                }
-                else
-                {
-                    return Json(new { success = false, message = "Nenhum beneficiário encontrado para o IDCLIENTE fornecido." }, JsonRequestBehavior.AllowGet);
-                }
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = "Ocorreu um erro: " + ex.Message }, JsonRequestBehavior.AllowGet);
-            }
-        }
-
-
-        [HttpPost]
-        public JsonResult ExcluirBeneficiario(long id)
-        {
-            BoBeneficiario boBeneficiario = new BoBeneficiario();
-
-            try
-            {
-                boBeneficiario.Excluir(id);
-                return Json(new { success = true, message = "Beneficiário excluído com sucesso." });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = "Ocorreu um erro: " + ex.Message });
-            }
-        }
-
-
-        [HttpPost]
-        public JsonResult AlterarBeneficiario(BeneficiarioModel model)
-        {
-            try
-            {
-                BoCliente boCliente = new BoCliente();
-                var cliente = boCliente.BuscarClientePorCpf(model.ClienteCPF);
-
-                if (cliente is null)
-                {
-                    Response.StatusCode = 400;
-                    return Json(new { success = false, message = "Cliente não cadastrado" });
-                }
-
-                BoBeneficiario boBeneficiario = new BoBeneficiario();
-
-                if (boBeneficiario.VerificarCpfCadastrado(cliente.Id, model.BeneficiarioCPF))
-                {
-                    Response.StatusCode = 400;
-                    return Json(new { success = false, message = "Beneficiario já cadastrado" });
-                }
-                boBeneficiario.Alterar(model.Id, model.BeneficiarioNome, model.BeneficiarioCPF);
-
-                return Json(new { success = true, message = "Beneficiário atualizado com sucesso." });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = "Ocorreu um erro: " + ex.Message });
-            }
-        }
     }
 }

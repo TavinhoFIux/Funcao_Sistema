@@ -31,9 +31,48 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MediatR, Version=8.0.1.0, Culture=neutral, PublicKeyToken=bb9a41a5e8aaa7e2, processorArchitecture=MSIL">
+      <HintPath>..\packages\MediatR.8.0.1\lib\net461\MediatR.dll</HintPath>
+    </Reference>
+    <Reference Include="MediatR.Extensions.Microsoft.DependencyInjection, Version=8.0.0.0, Culture=neutral, PublicKeyToken=bb9a41a5e8aaa7e2, processorArchitecture=MSIL">
+      <HintPath>..\packages\MediatR.Extensions.Microsoft.DependencyInjection.8.0.1\lib\netstandard2.0\MediatR.Extensions.Microsoft.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.2.0.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="SimpleInjector, Version=5.0.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <HintPath>..\packages\SimpleInjector.5.4.6\lib\net461\SimpleInjector.dll</HintPath>
+    </Reference>
+    <Reference Include="SimpleInjector.Integration.Web, Version=5.0.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <HintPath>..\packages\SimpleInjector.Integration.Web.5.0.0\lib\net45\SimpleInjector.Integration.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="SimpleInjector.Integration.Web.Mvc, Version=5.0.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <HintPath>..\packages\SimpleInjector.Integration.Web.Mvc.5.0.0\lib\net45\SimpleInjector.Integration.Web.Mvc.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web.Helpers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.1.0.20105.408\lib\net40\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.3.0.20105.1\lib\net40\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.1.0.20105.408\lib\net40\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.1.0.20105.408\lib\net40\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.1.0.20105.408\lib\net40\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.1.0.20105.408\lib\net40\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -42,13 +81,34 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BLL\BoBeneficiario.cs" />
-    <Compile Include="BLL\BoCliente.cs" />
-    <Compile Include="DAL\Beneficiarios\DaoBeneficiario.cs" />
-    <Compile Include="DAL\Clientes\DaoCliente.cs" />
+    <Compile Include="BLL\Beneficiarios\Commands\AlterarBeneficiarioCommand .cs" />
+    <Compile Include="BLL\Beneficiarios\Commands\ExcluirBeneficiarioCommand.cs" />
+    <Compile Include="BLL\Beneficiarios\Commands\IncluirBeneficiarioCommand .cs" />
+    <Compile Include="BLL\Beneficiarios\Handlers\AlterarBeneficiarioCommandHandler .cs" />
+    <Compile Include="BLL\Beneficiarios\Handlers\BuscarBeneficiariosPorIdClienteQueryHandler.cs" />
+    <Compile Include="BLL\Beneficiarios\Handlers\ExcluirBeneficiarioCommandHandler.cs" />
+    <Compile Include="BLL\Beneficiarios\Handlers\IncluirBneficiarioCommandHandler.cs" />
+    <Compile Include="BLL\Beneficiarios\Interfaces\IBeneficiarioService.cs" />
+    <Compile Include="BLL\Beneficiarios\Query\BuscarBeneficiariosPorIdClienteQuery.cs" />
+    <Compile Include="BLL\Beneficiarios\Services\BeneficiarioService.cs" />
+    <Compile Include="BLL\Cliente\Commands\AlterarClienteCommand .cs" />
+    <Compile Include="BLL\Cliente\Commands\BuscarClientesCommand .cs" />
+    <Compile Include="BLL\Cliente\Commands\IncluirClienteCommand .cs" />
+    <Compile Include="BLL\Cliente\Handlers\AlterarClienteCommandHandler .cs" />
+    <Compile Include="BLL\Cliente\Handlers\BuscarClientesCommandHandler .cs" />
+    <Compile Include="BLL\Cliente\Handlers\ConsultarClienteQueryHandler .cs" />
+    <Compile Include="BLL\Cliente\Handlers\IncluirClienteCommandHandler .cs" />
+    <Compile Include="BLL\Cliente\interfaces\IClienteService.cs" />
+    <Compile Include="BLL\Cliente\Query\ConsultarClienteQuery .cs" />
+    <Compile Include="BLL\Cliente\Services\ClienteService.cs" />
+    <Compile Include="BLL\Utlis\Result.cs" />
+    <Compile Include="DAL\Beneficiarios\BeneficiarioRepository .cs" />
+    <Compile Include="DAL\Beneficiarios\IBeneficiarioRepository.cs" />
+    <Compile Include="DAL\Clientes\ClienteRepository .cs" />
     <Content Include="DAL\Beneficiarios\Procedures\FI_SP_AltBeneficiario.sql" />
     <Content Include="DAL\Beneficiarios\Procedures\FI_SP_ConsBeneficiariosPorIdCliente.sql" />
-    <Compile Include="DAL\Padrao\FI.AcessoDados.cs" />
+    <Compile Include="DAL\Clientes\IClienteRepository.cs" />
+    <Compile Include="DAL\Padrao\Repository.cs" />
     <Compile Include="DML\Beneficiario.cs" />
     <Compile Include="DML\Cliente.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -63,6 +123,14 @@
     <Content Include="DAL\Clientes\Procedures\FI_SP_DelCliente.sql" />
     <Content Include="DAL\Clientes\Procedures\FI_SP_IncCliente.sql" />
     <Content Include="DAL\Clientes\Procedures\FI_SP_PesqCliente.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="BLL\Beneficiarios\Validations\" />
+    <Folder Include="BLL\Cliente\Validations\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
