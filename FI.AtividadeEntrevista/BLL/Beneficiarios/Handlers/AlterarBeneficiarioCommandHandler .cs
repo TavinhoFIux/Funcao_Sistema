@@ -2,6 +2,7 @@
 using FI.AtividadeEntrevista.BLL.Beneficiarios.Commands;
 using FI.AtividadeEntrevista.BLL.Cliente.interfaces;
 using MediatR;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,7 +31,8 @@ namespace FI.AtividadeEntrevista.BLL.Beneficiarios.Handlers
                     return false;
                 }
 
-                if (_beneficiarioService.VerificarCpfCadastrado(cliente.Id, request.BeneficiarioCPF))
+                var beneficariosCadastrados = _beneficiarioService.BuscarBeneficiariosPorIdCliente(cliente.Id);
+                if (beneficariosCadastrados.Any(b => b.Nome == request.BeneficiarioNome && b.CPF == request.BeneficiarioCPF))
                 {
                     return false;
                 }

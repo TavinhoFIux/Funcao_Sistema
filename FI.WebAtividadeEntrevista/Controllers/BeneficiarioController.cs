@@ -4,6 +4,7 @@ using FI.AtividadeEntrevista.BLL.Cliente.Query;
 using FI.WebAtividadeEntrevista.Models;
 using MediatR;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using WebAtividadeEntrevista.Models;
@@ -23,6 +24,18 @@ namespace FI.WebAtividadeEntrevista.Controllers
         [HttpPost]
         public async Task<ActionResult> IncluirBeneficiario(BeneficiarioModel model)
         {
+
+            if (!ModelState.IsValid)
+            {
+                var erros = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                Response.StatusCode = 400;
+                return Json(string.Join(Environment.NewLine, erros));
+            }
+
             if (model.ClienteCPF == null)
             {
                 return new HttpStatusCodeResult(400, "Cliente não cadastrado");
@@ -31,8 +44,8 @@ namespace FI.WebAtividadeEntrevista.Controllers
             var command = new IncluirBeneficiarioCommand
             {
                 ClienteCPF = model.ClienteCPF,
-                BeneficiarioNome = model.BeneficiarioNome,
-                BeneficiarioCPF = model.BeneficiarioCPF
+                BeneficiarioNome = model.Nome,
+                BeneficiarioCPF = model.CPF
             };
 
             var result = await _mediator.Send(command);
@@ -98,9 +111,20 @@ namespace FI.WebAtividadeEntrevista.Controllers
         [HttpPost]
         public async Task<JsonResult> AlterarBeneficiario(BeneficiarioModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                var erros = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                Response.StatusCode = 400;
+                return Json(string.Join(Environment.NewLine, erros));
+            }
+
             try
             {
-                var command = new AlterarBeneficiarioCommand(model.Id, model.BeneficiarioNome, model.BeneficiarioCPF, model.ClienteCPF);
+                var command = new AlterarBeneficiarioCommand(model.Id, model.Nome, model.CPF, model.ClienteCPF);
                 var success = await _mediator.Send(command);
 
                 if (success)

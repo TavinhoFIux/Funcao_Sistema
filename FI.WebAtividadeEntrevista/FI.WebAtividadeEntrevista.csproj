@@ -147,6 +147,7 @@
     </Compile>
     <Compile Include="Models\BeneficiarioModel.cs" />
     <Compile Include="Models\ClienteModel.cs" />
+    <Compile Include="Models\ClienteModelIncluir.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Views\Cliente\ModalBeneficiario.cshtml" />
   </ItemGroup>

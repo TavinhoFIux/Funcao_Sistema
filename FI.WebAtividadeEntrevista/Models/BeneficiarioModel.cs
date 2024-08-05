@@ -13,21 +13,22 @@ namespace FI.WebAtividadeEntrevista.Models
         /// BeneficiarioNome
         /// </summary>
         [Required]
-        public string BeneficiarioNome { get; set; }
+        public string Nome { get; set; }
 
         /// <summary>
         /// BeneficiarioCPF
         /// </summary>
         [Required]
-        [RegularExpression(@"^\d{3}\.\d{3}\.\d{3}\-\d{2}$", ErrorMessage = "Digite um CPF válido")]
-        public string BeneficiarioCPF { get; set; }
+        [RegularExpression(@"^\d{3}\.\d{3}\.\d{3}\-\d{2}$|^\d{11}$", ErrorMessage = "Digite um CPF válido.")]
+
+        public string CPF { get; set; }
 
 
         /// <summary>
         /// clienteCPF
         /// </summary>
         [Required]
-        [RegularExpression(@"^\d{3}\.\d{3}\.\d{3}\-\d{2}$", ErrorMessage = "Digite um CPF válido")]
+        [RegularExpression(@"^\d{3}\.\d{3}\.\d{3}\-\d{2}$|^\d{11}$", ErrorMessage = "Digite um CPF válido.")]
         public string ClienteCPF { get; set; }
     }
 }

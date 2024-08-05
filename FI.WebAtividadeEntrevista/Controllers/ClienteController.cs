@@ -1,14 +1,14 @@
-﻿using FI.AtividadeEntrevista.BLL;
-using WebAtividadeEntrevista.Models;
+﻿using WebAtividadeEntrevista.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using FI.AtividadeEntrevista.DML;
 using System.Threading.Tasks;
 using MediatR;
 using FI.AtividadeEntrevista.BLL.Cliente.Commands;
 using FI.AtividadeEntrevista.BLL.Cliente.Query;
+using FI.WebAtividadeEntrevista.Models;
+using System.Web.UI.WebControls;
 
 namespace WebAtividadeEntrevista.Controllers
 {
@@ -32,7 +32,7 @@ namespace WebAtividadeEntrevista.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> Incluir(ClienteModel model)
+        public async Task<JsonResult> Incluir(ClienteModelIncluir model)
         {
             if (!ModelState.IsValid)
             {
@@ -47,18 +47,27 @@ namespace WebAtividadeEntrevista.Controllers
 
             try
             {
-                var command = new IncluirClienteCommand(
-                    model.CEP,
-                    model.Cidade,
-                    model.Email,
-                    model.Estado,
-                    model.Logradouro,
-                    model.Nacionalidade,
-                    model.Nome,
-                    model.Sobrenome,
-                    model.Telefone,
-                    model.CPF
-                );
+                var cliente = new FI.AtividadeEntrevista.DML.Cliente
+                {
+                    CEP = model.Cliente.CEP,
+                    Cidade = model.Cliente.Cidade,
+                    Email = model.Cliente.Email,
+                    Estado = model.Cliente.Estado,
+                    Logradouro = model.Cliente.Logradouro,
+                    Nacionalidade = model.Cliente.Nacionalidade,
+                    Nome = model.Cliente.Nome,
+                    Sobrenome = model.Cliente.Sobrenome,
+                    Telefone = model.Cliente.Telefone,
+                    CPF = model.Cliente.CPF
+                };
+
+                var beneficiarios = model.Beneficiarios?.Select(b => new FI.AtividadeEntrevista.DML.Beneficiario
+                {
+                    Nome = b.Nome,
+                    CPF = b.CPF
+                }).ToList() ?? new List<FI.AtividadeEntrevista.DML.Beneficiario>();
+
+                var command = new IncluirClienteCommand(cliente, beneficiarios);
 
                 long clienteId = await _mediator.Send(command);
 

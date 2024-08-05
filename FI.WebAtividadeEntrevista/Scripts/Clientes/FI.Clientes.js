@@ -1,51 +1,57 @@
 ﻿var clienteCadastrado = false;
+var beneficiaries = [];
 $(document).ready(function () {
 
     $('#CPF').mask('000.000.000-00');
     $('#BeneficiarioCPF').mask('000.000.000-00');
 
-    $('#formCadastro').submit(function (e) {
-        e.preventDefault();
-        $.ajax({
-            url: urlPost,
-            method: "POST",
-            data: {
-                "NOME": $(this).find("#Nome").val(),
-                "CEP": $(this).find("#CEP").val(),
-                "Email": $(this).find("#Email").val(),
-                "Sobrenome": $(this).find("#Sobrenome").val(),
-                "Nacionalidade": $(this).find("#Nacionalidade").val(),
-                "Estado": $(this).find("#Estado").val(),
-                "Cidade": $(this).find("#Cidade").val(),
-                "Logradouro": $(this).find("#Logradouro").val(),
-                "Telefone": $(this).find("#Telefone").val(),
-                "CPF": removerMascaraCpf($(this).find("#CPF").val())
-            },
-            error:
-                function (r) {
-                    if (r.status == 400)
-                        ModalDialog("Ocorreu um erro", r.responseJSON.message);
-                    else if (r.status == 500)
-                        ModalDialog("Ocorreu um erro", "Ocorreu um erro interno no servidor.");
-                },
-            success:
-                function (r) {
-                    clienteCadastrado = true;
-                    ModalDialog("Sucesso!", r.message)
-                    $("#formCadastro")[0].reset();
-                }
-        });
+$('#formCadastro').submit(function (e) {
+    e.preventDefault();
+    var clienteCadastrado = false;
+    
+    var clienteData = {
+        "NOME": $(this).find("#Nome").val(),
+        "CEP": $(this).find("#CEP").val(),
+        "Email": $(this).find("#Email").val(),
+        "Sobrenome": $(this).find("#Sobrenome").val(),
+        "Nacionalidade": $(this).find("#Nacionalidade").val(),
+        "Estado": $(this).find("#Estado").val(),
+        "Cidade": $(this).find("#Cidade").val(),
+        "Logradouro": $(this).find("#Logradouro").val(),
+        "Telefone": $(this).find("#Telefone").val(),
+        "CPF": removerMascaraCpf($(this).find("#CPF").val())
+    };
 
-        if (clienteCadastrado) {
-            $('#modalBeneficiario').on('shown.bs.modal', function () {
-                if (obj.Id) {
-                    carregarBeneficiarios(obj.Id);
-                }
-            });
+
+    $.ajax({
+        url: urlPost,
+        method: "POST",
+        data: {
+            cliente: clienteData,
+            beneficiarios: beneficiaries
+        },
+        error: function (r) {
+            if (r.status == 400)
+                ModalDialog("Ocorreu um erro", r.responseJSON.message);
+            else if (r.status == 500)
+                ModalDialog("Ocorreu um erro", "Ocorreu um erro interno no servidor.");
+        },
+        success: function (r) {
+            clienteCadastrado = true;
+            ModalDialog("Sucesso!", r.message)
+            $("#formCadastro")[0].reset();
+            $("#modalBeneficiario")[0].reset();
         }
+    });
 
-
-    })
+    if (clienteCadastrado) {
+        $('#modalBeneficiario').on('shown.bs.modal', function () {
+            if (obj.Id) {
+                carregarBeneficiarios(obj.Id);
+            }
+        });
+    }
+    });
 });
 
 
@@ -96,42 +102,35 @@ function carregarBeneficiarios(clienteId) {
 var beneficiarioIdAtual = null;
 
 function salvarBeneficiario() {
-    beneficiarioIdAtual ? alteraBeneficiario() : adicionarBeneficiario();
+    beneficiarioIdAtual ? alteraBeneficiario(beneficiarioIdAtual) : adicionarBeneficiario();
 }
 
 
-function alteraBeneficiario() {
+function alteraBeneficiario(id) {
+    var row = $(`#beneficiariosTableBody tr[data-id='${id}']`);
     var clienteCPF = $("#CPF").val();
-    var cpf = $("#BeneficiarioCPF").val();
-    var nome = $("#BeneficiarioNome").val();
-    var id = beneficiarioIdAtual;
 
+    if (row.length) {
+        var beneficiarioNome = $("#BeneficiarioNome").val();
+        var beneficiarioCPF = $("#BeneficiarioCPF").val();
+        row.find('td').eq(0).text(beneficiarioNome);
+        row.find('td').eq(1).text(beneficiarioCPF);
 
-    $.ajax({
-        url: urlAtualizarBeneficiario,
-        type: 'POST',
-        data: {
-            Id: id,
-            BeneficiarioNome: nome,
-            BeneficiarioCPF: removerMascaraCpf(cpf),
-            ClienteCPF: removerMascaraCpf(clienteCPF)
-        },
-        success: function (response) {
-            beneficiarioIdAtual = null;
-            limparFormBeneficiario();
+        var index = beneficiaries.findIndex(b => b.Id === id);
+        if (index !== -1) {
+            beneficiaries[index] = {
+                Id: id,
+                Nome: beneficiarioNome,
+                CPF: removerMascaraCpf(beneficiarioCPF),
+                ClienteCPF: removerMascaraCpf(clienteCPF)
 
-            if (response.success) {
-                atualizarTabelaBeneficiarios(id, nome, cpf);
-                console.log(response.message);
-            } else {
-                console.error('Erro: ' + response.message);
-            }
-        },
-        error: function (xhr) {
-            beneficiarioIdAtual = null;
-            alert('Erro ao salvar beneficiário: ' + xhr.responseText);
+            };
         }
-    });
+    }
+
+    $("#btnSalvar").text("Incluir");
+    limparFormBeneficiario();
+    beneficiarioIdAtual = null;
 }
 
 
@@ -142,41 +141,26 @@ function limparFormBeneficiario() {
 
 function adicionarBeneficiario() {
     var clienteCPF = $("#CPF").val();
-    if (!clienteCadastrado) {
-        ModalDialog("Ocorreu um erro", "Cadastre Cliente ");
-        return
+    if (clienteCPF == '') {
+        ModalDialog("Ocorreu um erro", "Cadastre Cliente");
+        return;
     }
 
     var beneficiarioNome = $("#BeneficiarioNome").val();
     var beneficiarioCPF = $("#BeneficiarioCPF").val();
 
-    $.ajax({
-        url: urlPostBeneficiario,
-        method: "POST",
-        data: {
-            ClienteCPF: removerMascaraCpf(clienteCPF),
-            BeneficiarioNome: beneficiarioNome,
-            BeneficiarioCPF: removerMascaraCpf(beneficiarioCPF)
-        },
-        success: function (response) {
-            limparFormBeneficiario();
-            if (response.success) {
-                adicionarBeneficiariosNaTabela([response.beneficiario]);
-            } else {
-                console.error(response.message);
-            }
-        },
-        error:
-            function (r) {
-                limparFormBeneficiario();
-                $("#modalBeneficiario").modal('hide');
-
-                if (r.status == 400)
-                    ModalDialog("Ocorreu um erro", r.responseJSON.message);
-                else if (r.status == 500)
-                    ModalDialog("Ocorreu um erro", "Ocorreu um erro interno no servidor.");
-            },
+    var newId = beneficiaries.length ? Math.max(beneficiaries.map(b => b.Id)) + 1 : 1;
+    beneficiarioIdAtual = newId;
+    beneficiaries.push({
+        Id: newId,
+        Nome: beneficiarioNome,
+        CPF: removerMascaraCpf(beneficiarioCPF),
+        ClienteCPF: removerMascaraCpf(clienteCPF)
     });
+
+    limparFormBeneficiario();
+
+    adicionarBeneficiariosNaTabela(beneficiaries);
 }
 
 function adicionarBeneficiariosNaTabela(beneficiarios) {
@@ -223,28 +207,16 @@ function editarBeneficiario(id) {
         $("#BeneficiarioNome").val(beneficiarioName)
         $("#BeneficiarioCPF").val(beneficiarioCpf);
     }
-    $("#btnSalvar").text("Salvar Alterações");
+    $("#btnSalvar").text("Salvar");
 }
 
 function excluirBeneficiario(id) {
     if (confirm('Tem certeza que deseja excluir este beneficiário?')) {
-        $.ajax({
-            url: urlDeleteBeneficiario,
-            type: 'POST',
-            data: { id: id },
-            success: function (response) {
-                if (response.success) {
-                    console.log(response.message);
-                    $(`tr[data-id='${id}']`).remove();
+        beneficiaries = beneficiaries.filter(b => b.Id !== id);
 
-                } else {
-                    console.log('Erro ao excluir beneficiário: ' + response.message);
-                }
-            },
-            error: function (xhr) {
-                console.log('Erro ao excluir beneficiário: ' + xhr.responseText);
-            }
-        });
+        $(`tr[data-id='${id}']`).remove();
+
+        atualizarTabelaBeneficiarios();
     }
 }
 

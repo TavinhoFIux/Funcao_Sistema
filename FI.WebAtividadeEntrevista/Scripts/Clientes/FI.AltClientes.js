@@ -51,7 +51,8 @@
             success:
             function (r) {
                 ModalDialog("Sucesso!", r.message)
-                $("#formCadastro")[0].reset();                                
+                $("#formCadastro")[0].reset();   
+                window.location.href = urlRetorno;
             }
         });
     })
@@ -97,8 +98,8 @@ function alteraBeneficiario() {
         type: 'POST',
         data: {
             Id: id,
-            BeneficiarioNome: nome,
-            BeneficiarioCPF: removerMascaraCpf(cpf),
+            Nome: nome,
+            CPF: removerMascaraCpf(cpf),
             ClienteCPF: removerMascaraCpf(clienteCPF)
         },
         success: function (response) {
@@ -135,8 +136,8 @@ function adicionarBeneficiario() {
         method: "POST",
         data: {
             ClienteCPF: removerMascaraCpf(clienteCPF),
-            BeneficiarioNome: beneficiarioNome,
-            BeneficiarioCPF: removerMascaraCpf(beneficiarioCPF)
+            Nome: beneficiarioNome,
+            CPF: removerMascaraCpf(beneficiarioCPF)
         },
         success: function (response) {
             limparFormBeneficiario();

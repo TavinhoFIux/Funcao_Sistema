@@ -1,7 +1,9 @@
-﻿using FI.AtividadeEntrevista.BLL.Cliente.Commands;
+﻿using FI.AtividadeEntrevista.BLL.Beneficiario.Interfaces;
+using FI.AtividadeEntrevista.BLL.Cliente.Commands;
 using FI.AtividadeEntrevista.BLL.Cliente.interfaces;
 using MediatR;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,33 +13,39 @@ namespace FI.AtividadeEntrevista.BLL.Cliente.Handlers
     {
         private readonly IClienteService _clienteService;
 
-        public IncluirClienteCommandHandler(IClienteService clienteService)
+        private readonly IBeneficiarioService _beneficiarioService;
+
+        public IncluirClienteCommandHandler(IClienteService clienteService, IBeneficiarioService beneficiarioService)
         {
             _clienteService = clienteService;
+            _beneficiarioService = beneficiarioService;
         }
 
         public async Task<long> Handle(IncluirClienteCommand request, CancellationToken cancellationToken)
         {
-            if (_clienteService.VerificarExistencia(request.CPF))
+            if (_clienteService.VerificarExistencia(request.Cliente.CPF))
             {
                 throw new InvalidOperationException("Cliente já cadastrado.");
             }
 
-            var cliente = new DML.Cliente
-            {
-                CEP = request.CEP,
-                Cidade = request.Cidade,
-                Email = request.Email,
-                Estado = request.Estado,
-                Logradouro = request.Logradouro,
-                Nacionalidade = request.Nacionalidade,
-                Nome = request.Nome,
-                Sobrenome = request.Sobrenome,
-                Telefone = request.Telefone,
-                CPF = request.CPF
-            };
+            long clienteId = _clienteService.Incluir(request.Cliente);
 
-            return await Task.Run(() => _clienteService.Incluir(cliente));
+            if (request.Beneficiarios != null && request.Beneficiarios.Any())
+            {
+                foreach (var beneficiario in request.Beneficiarios)
+                {
+                    beneficiario.IdCliente = clienteId;
+
+                    if (_beneficiarioService.VerificarCpfCadastrado(clienteId, beneficiario.CPF))
+                    {
+                        throw new InvalidOperationException("Beneficario já cadastrado.");
+                    }
+
+                    _beneficiarioService.Incluir(beneficiario);
+                }
+            }
+
+            return await Task.Run(() => clienteId);
         }
     }
 }
